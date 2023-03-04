@@ -1,0 +1,816 @@
+select * from accidentarecgh;
+select * from competitiecgh;
+select * from echipacgh;
+select * from etapacgh;
+--select * from membru_echipa_natcgh;
+select * from orascgh;
+select * from participa_lacgh;
+select * from rezultatcgh;
+select * from saritorcgh;
+select * from sponsorcgh;
+select * from sponsorizeazacgh;
+select * from taracgh;
+select * from trambulinacgh;
+
+
+
+--creare
+
+create table ECHIPACGH(
+id_echipa varchar(3) not null primary key,
+nume_echipa varchar(25) not null,
+antrenor varchar(50) not null,
+salariu_antrenor numeric(4,0) check(salariu_antrenor>2000)
+);
+commit;
+
+create table SARITORCGH
+(
+id_saritor number(5,0) not null primary key,
+nume varchar(30) not null,
+prenume varchar(30) not null,
+gen varchar(1),
+varsta number(2,0) not null,
+greutate number(3,1) not null,
+id_echipa varchar(3) not null,
+foreign key (id_echipa) references ECHIPACGH(id_echipa) on delete cascade
+);
+
+
+
+create table ACCIDENTARECGH(
+id_accident number(3,0) not null primary key,
+id_saritor number(5,0) not null,
+data_accidentare DATE,
+foreign key (id_saritor) references SARITORCGH(id_saritor) on delete cascade
+);
+
+create table SPONSORCGH(
+id_sponsor number(5,0) not null primary key,
+denumire varchar(40) not null
+);
+
+create table SPONSORIZEAZACGH(
+id_echipa varchar(5) not null,
+id_sponsor number(5,0) not null,
+durata_contract number(2,0) not null,
+suma number(4,0) not null,
+constraint pk_sponsorizeaza primary key(id_sponsor,id_echipa)
+);
+
+create table COMPETITIECGH(
+id_competitie number(7,0) not null primary key,
+nume varchar(45) not null,
+data_inceput DATE,
+data_final DATE,
+numar_etape number(2,0) not null
+);
+
+
+create table TARACGH(
+id_tara number(2,0) not null primary key,
+nume varchar(15) not null
+);
+create table ORASCGH(
+id_oras number(3,0) not null primary key,
+id_tara number(2,0) not null,
+nume varchar(15) not null,
+foreign key (id_tara) references TARACGH(id_tara) on delete cascade
+);
+
+create table TRAMBULINACGH(
+id_trambulina number(3,0) not null primary key,
+id_oras number(3,0) not null,
+nume varchar(40) not null,
+pct_de_constr number(3,0) not null,
+record number(4,1),
+dimensiune number(3,0) not null,
+foreign key (id_oras) references ORASCGH(id_oras) on delete cascade
+);
+
+
+create table ETAPACGH (
+id_trambulina number(3,0) not null,
+id_etapa number(3,0) not null primary key,
+data_etapa DATE,
+tip varchar(9) not null,
+zi_noapte varchar(7) not null,
+foreign key (id_trambulina) references TRAMBULINACGH(id_trambulina) on delete cascade
+);
+commit;
+
+create table PARTICIPA_LACGH (
+id_etapa number(3,0) not null,
+id_competitie number(7,0) not null,
+id_saritor number(5,0) not null,
+descriere_pieptar varchar(50),
+constraint pk_participa_la primary key(id_competitie,id_saritor,id_etapa)
+);
+
+create table REZULTATCGH(
+id_saritor number(5,0) not null,
+id_etapa number(3,0) not null,
+id_rezultat number(5,0) not null,
+puncte number(5,2)not null,
+lungime1 number(5,1),
+lungime2 number(5,1),
+constraint pk_rezultat primary key(id_etapa,id_rezultat,id_saritor)
+);
+
+--inserare
+insert into ECHIPACGH values
+('NOV','Norvegia','Roar Ljokelsoy',2300);
+insert into ECHIPACGH values
+('SLO','Slovenia','Abi Lanon',4300);
+insert into ECHIPACGH values
+('GER','Germania','Pius Pashke',2900);
+insert into ECHIPACGH values
+('AUT','Austria','Sven Ruperdadt',4600);
+insert into ECHIPACGH values
+('ROU','Romania','Dumitru Petre',2400);
+
+insert into SARITORCGH values
+('401','Kraft','Stefan','m',29,56,'AUT');
+insert into SARITORCGH values
+('402','Horl','Jan','m',23,67,'AUT');
+insert into SARITORCGH values
+('403','Huber','Daniel','m',25,64,'AUT');
+insert into SARITORCGH values
+('404','Morgenstern','Thomas','m',40,66,'AUT');
+insert into SARITORCGH values
+('100','Eisenbichler','Markus','m',29,56,'GER');
+insert into SARITORCGH values
+('101','Geiger','Karl','m',23,67,'GER');
+insert into SARITORCGH values
+('102','Wellinger','Andreas','m',25,64,'GER');
+insert into SARITORCGH values
+('301','Kos','Lovro','m',23,67,'SLO');
+insert into SARITORCGH values
+('302','Prevc','Peter','m',25,64,'SLO');
+insert into SARITORCGH values
+('201','Tande','Daniel-Andre','m',23,67,'NOV');
+
+insert into SPONSORCGH values
+(123,'milka');
+insert into SPONSORCGH values
+(789,'ck');
+insert into SPONSORCGH values
+(456,'4F');
+insert into SPONSORCGH values
+(135,'adidas');
+insert into SPONSORCGH values
+(246,'nike');
+
+insert into SPONSORIZEAZACGH values
+('SLO',135,24,5700);
+insert into SPONSORIZEAZACGH values
+('ROU',789,6,3300);
+insert into SPONSORIZEAZACGH values
+('AUT',135,12,5700);
+insert into SPONSORIZEAZACGH values
+('NOV',135,18,4700);
+insert into SPONSORIZEAZACGH values
+('ROU',135,9,4700);
+insert into SPONSORIZEAZACGH values
+('NOV',456,6,3000);
+insert into SPONSORIZEAZACGH values
+('NOV',246,12,3400);
+insert into SPONSORIZEAZACGH values
+('GER',246,12,4400);
+insert into SPONSORIZEAZACGH values
+('GER',135,6,2700);
+insert into SPONSORIZEAZACGH values
+('GER',123,12,4600);
+
+insert into COMPETITIECGH values
+(56789, 'Zbor cu schiurile','02-DEC-2022','05-DEC-2023',2);
+insert into COMPETITIECGH values
+(34567, 'RAW AIR','09-MAR-2023','18-MAR-2023',5);
+insert into COMPETITIECGH values
+(45678, 'Planica 3','21-FEB-2023','05-MAR-2023',3);
+insert into COMPETITIECGH values
+(12345, 'Mondial','21-NOV-2022','18-MAR-2023',12);
+insert into COMPETITIECGH values
+(23456, 'Extra','05-DEC-23','05-DEC-23',1);
+
+insert into TARACGH values
+(4,'Slovenia');
+insert into TARACGH values
+(1,'Polonia');
+insert into TARACGH values
+(3,'Germania');
+insert into TARACGH values
+(2,'Austria');
+insert into TARACGH values
+(5,'Norvegia');
+
+
+insert into ORASCGH values
+(11,1,'Zakopane');
+insert into ORASCGH values
+(31,3,'Oberstdorf');
+insert into ORASCGH values
+(32,3,'Klingenthal');
+insert into ORASCGH values
+(21,2,'Innsbruck');
+insert into ORASCGH values
+(51,5,'Vikersund');
+insert into ORASCGH values
+(41,4,'Planica');
+
+
+insert into TRAMBULINACGH values
+(211,21,'Berg Isel',120,134.5,130);
+insert into TRAMBULINACGH values
+(212,21,'Paul-Ausserleitner-Schanze',125,145,140);
+insert into TRAMBULINACGH values
+(311,31,'Heini-Klopfer-Skiflugschanze',185,225.5,213);
+insert into TRAMBULINACGH values
+(321,32,'Olympiaschanze',125,141,140);
+insert into TRAMBULINACGH values
+(411,41,'Letalnica',185,239,215);
+insert into TRAMBULINACGH values
+(511,51,'Vikersundbakken',200,254,240);
+
+commit;
+
+
+insert into ETAPACGH values
+(212,3,'2-DEC-2022','zbor','noapte');
+insert into ETAPACGH values
+(211,4,'24-DEC-2022','sarit','zi');
+insert into ETAPACGH values
+(311,8,'05-DEC-2022','sarit','zi');
+insert into ETAPACGH values
+(321,12,'04-JAN-2023','sarit','zi');
+insert into ETAPACGH values
+(411,14,'27-FEB-2023','sarit','noapte');
+insert into ETAPACGH values
+(212,11,'23-FEB-2023','zbor','noapte');
+insert into ETAPACGH values
+(411,15,'05-MAR-2023','sarit','zi');
+insert into ETAPACGH values
+(311,16,'09-MAR-2023','sarit','zi');
+insert into ETAPACGH values
+(311,17,'10-MAR-2023','sarit','zi');
+insert into ETAPACGH values
+(511,19,'16-MAR-2023','sarit','noapte');
+insert into ETAPACGH values
+(511,20,'17-MAR-2023','sarit','noapte');
+insert into ETAPACGH values
+(511,21,'18-MAR-2023','sarit','zi');
+
+commit;
+
+
+insert into PARTICIPA_LACGH values
+(3,12345,301,'galben');
+insert into PARTICIPA_LACGH values
+(3,12345,401,'galben');
+insert into PARTICIPA_LACGH values
+(3,12345,402,'galben');
+insert into PARTICIPA_LACGH values
+(12,12345,102,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,201,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,301,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,302,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,401,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,402,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,403,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,404,'mov');
+insert into PARTICIPA_LACGH values
+(12,12345,100,'mov');
+insert into PARTICIPA_LACGH values
+(3,56789,100,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,101,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,102,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,201,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,301,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,302,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,401,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,402,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,403,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,404,'verde');
+insert into PARTICIPA_LACGH values
+(3,56789,501,'verde');
+insert into PARTICIPA_LACGH values
+(8,56789,100,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,101,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,102,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,201,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,301,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,302,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,401,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,402,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,403,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,404,'alb');
+insert into PARTICIPA_LACGH values
+(8,56789,501,'alb');
+
+insert into PARTICIPA_LACGH values
+(17,34567,301,'portocaliu');
+insert into PARTICIPA_LACGH values
+(17,34567,401,'portocaliu');
+insert into PARTICIPA_LACGH values
+(17,34567,402,'portocaliu');
+insert into PARTICIPA_LACGH values
+(19,34567,102,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,201,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,301,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,302,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,401,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,402,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,403,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,404,'roz');
+insert into PARTICIPA_LACGH values
+(19,34567,100,'roz');
+insert into PARTICIPA_LACGH values
+(11,45678,100,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,101,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,102,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,201,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,301,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,302,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,401,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,402,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,403,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,404,'maro');
+insert into PARTICIPA_LACGH values
+(11,45678,501,'maro');
+
+insert into PARTICIPA_LACGH values
+(3,12345,100,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,101,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,102,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,201,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,302,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,403,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,404,'verde');
+insert into PARTICIPA_LACGH values
+(3,12345,501,'verde');
+insert into PARTICIPA_LACGH values
+(8,12345,100,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,101,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,102,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,201,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,301,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,302,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,401,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,402,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,403,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,404,'alb');
+insert into PARTICIPA_LACGH values
+(8,12345,501,'alb');
+
+insert into PARTICIPA_LACGH values
+(17,12345,301,'portocaliu');
+insert into PARTICIPA_LACGH values
+(17,12345,401,'portocaliu');
+insert into PARTICIPA_LACGH values
+(17,12345,402,'portocaliu');
+insert into PARTICIPA_LACGH values
+(19,12345,102,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,201,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,301,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,302,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,401,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,402,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,403,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,404,'roz');
+insert into PARTICIPA_LACGH values
+(19,12345,100,'roz');
+insert into PARTICIPA_LACGH values
+(11,12345,100,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,101,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,102,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,201,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,301,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,302,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,401,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,402,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,403,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,404,'maro');
+insert into PARTICIPA_LACGH values
+(11,12345,501,'maro');
+
+insert into PARTICIPA_LACGH values
+(8,23456,100,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,101,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,102,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,201,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,301,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,302,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,401,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,402,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,403,'alb');
+insert into PARTICIPA_LACGH values
+(8,23456,404,'alb');
+
+commit;
+
+
+insert into ACCIDENTARECGH values
+(777,302,'05-DEC-2022');
+insert into ACCIDENTARECGH values
+(111,100,'05-DEC-2022');
+insert into ACCIDENTARECGH values
+(222,302,'23-FEB-2023');
+insert into ACCIDENTARECGH values
+(333,301,'23-FEB-2023');
+insert into ACCIDENTARECGH values
+(444,402,'10-MAR-2023');
+
+
+insert into REZULTATCGH values
+(301,3,31,220,150,150);
+insert into REZULTATCGH values
+(401,3,32,210,143,147);
+insert into REZULTATCGH values
+(402,3,33,212,142,150);
+
+insert into REZULTATCGH values
+(201,12,121,200,137,140);
+insert into REZULTATCGH values
+(102,12,122,210,143,145);
+insert into REZULTATCGH values
+(302,12,123,212,132,110);
+insert into REZULTATCGH values
+(301,12,124,200,117,130);
+insert into REZULTATCGH values
+(401,12,125,210,123,115);
+insert into REZULTATCGH values
+(100,12,126,212,132,110);
+insert into REZULTATCGH values
+(403,12,127,200,117,130);
+insert into REZULTATCGH values
+(402,12,128,210,123,115);
+insert into REZULTATCGH values
+(404,12,129,212,132,112);
+
+insert into REZULTATCGH values
+(101,3,34,220,127,130);
+insert into REZULTATCGH values
+(102,3,35,210,123,115);
+insert into REZULTATCGH values
+(100,3,36,212,132,132);
+insert into REZULTATCGH values
+(201,3,37,230,137,140);
+insert into REZULTATCGH values
+(302,3,38,205,133,115);
+insert into REZULTATCGH values
+(404,3,39,212,132,132);
+insert into REZULTATCGH values
+(403,3,310,230,137,140);
+insert into REZULTATCGH values
+(501,3,311,205,133,115);
+
+insert into REZULTATCGH values
+(100,8,1008,270,222,232);
+insert into REZULTATCGH values
+(401,8,4018,240,207,210);
+insert into REZULTATCGH values
+(101,8,1018,255,223,215);
+insert into REZULTATCGH values
+(102,8,1009,212,132,132);
+insert into REZULTATCGH values
+(201,8,4019,230,137,140);
+insert into REZULTATCGH values
+(301,8,5019,205,133,115);
+insert into REZULTATCGH values
+(302,8,10010,212,132,132);
+insert into REZULTATCGH values
+(402,8,40110,230,137,140);
+insert into REZULTATCGH values
+(403,8,30210,205,133,115);
+insert into REZULTATCGH values
+(404,8,10011,212,132,132);
+insert into REZULTATCGH values
+(501,8,40111,230,137,140);
+
+insert into REZULTATCGH values
+(301,17,30211,205,133,115);
+insert into REZULTATCGH values
+(402,17,10012,212,132,132);
+insert into REZULTATCGH values
+(401,17,40112,230,137,140);
+
+insert into REZULTATCGH values
+(102,19,10212,205,133,115);
+insert into REZULTATCGH values
+(201,19,10013,212,232,232);
+insert into REZULTATCGH values
+(301,19,40113,230,237,240);
+insert into REZULTATCGH values
+(302,19,10213,205,233,215);
+insert into REZULTATCGH values
+(403,19,10014,212,232,231);
+insert into REZULTATCGH values
+(401,19,40114,230,237,240);
+insert into REZULTATCGH values
+(402,19,10214,205,233,215);
+insert into REZULTATCGH values
+(404,19,10015,212,232,232);
+insert into REZULTATCGH values
+(100,19,40115,230,237,240);
+
+insert into REZULTATCGH values
+(201,11,10215,205,233,215);
+insert into REZULTATCGH values
+(100,11,10016,212,132,132);
+insert into REZULTATCGH values
+(101,11,10116,230,137,140);
+insert into REZULTATCGH values
+(102,11,10216,205,133,115);
+insert into REZULTATCGH values
+(301,11,10017,212,132,132);
+insert into REZULTATCGH values
+(302,11,10117,230,137,140);
+insert into REZULTATCGH values
+(402,11,40217,205,133,115);
+insert into REZULTATCGH values
+(401,11,10018,212,132,132);
+insert into REZULTATCGH values
+(404,11,10118,230,137,140);
+insert into REZULTATCGH values
+(403,11,40318,205,133,115);
+insert into REZULTATCGH values
+(501,11,10019,212,232,232);
+/*
+insert into REZULTATCGH values
+(401,19,40119,230,237,240);
+insert into REZULTATCGH values
+(404,19,40419,205,233,215);
+
+insert into REZULTATCGH values
+(100,20,10020,212,232,232);
+insert into REZULTATCGH values
+(401,20,40120,230,237,240);
+insert into REZULTATCGH values
+(102,20,10220,205,233,215);
+*/
+commit;
+
+
+
+
+
+
+insert into PARTICIPA_LACGH values
+(4,12345,100,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,101,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,102,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,201,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,301,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,302,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,401,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,402,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,403,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,404,'verde');
+insert into PARTICIPA_LACGH values
+(4,12345,501,'verde');
+
+insert into PARTICIPA_LACGH values
+(14,45678,100,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,101,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,102,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,201,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,301,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,302,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,401,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,402,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,403,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,404,'maro');
+insert into PARTICIPA_LACGH values
+(14,45678,501,'maro');
+
+insert into PARTICIPA_LACGH values
+(15,45678,100,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,101,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,102,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,201,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,301,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,302,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,401,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,402,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,403,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,404,'maro');
+insert into PARTICIPA_LACGH values
+(15,45678,501,'maro');
+
+insert into PARTICIPA_LACGH values
+(16,34567,301,'portocaliu');
+insert into PARTICIPA_LACGH values
+(16,34567,401,'portocaliu');
+insert into PARTICIPA_LACGH values
+(16,34567,402,'portocaliu');
+insert into PARTICIPA_LACGH values
+(20,34567,301,'portocaliu');
+insert into PARTICIPA_LACGH values
+(20,34567,401,'portocaliu');
+insert into PARTICIPA_LACGH values
+(20,34567,402,'portocaliu');
+insert into PARTICIPA_LACGH values
+(21,34567,301,'portocaliu');
+insert into PARTICIPA_LACGH values
+(21,34567,401,'portocaliu');
+insert into PARTICIPA_LACGH values
+(21,34567,402,'portocaliu');
+
+
+insert into REZULTATCGH values
+(301,4,41,220,150,150);
+insert into REZULTATCGH values
+(401,4,42,210,143,147);
+insert into REZULTATCGH values
+(402,4,43,212,142,150);
+insert into REZULTATCGH values
+(101,4,44,220,127,130);
+insert into REZULTATCGH values
+(102,4,45,210,123,115);
+insert into REZULTATCGH values
+(100,4,46,212,132,132);
+insert into REZULTATCGH values
+(201,4,47,230,137,140);
+insert into REZULTATCGH values
+(302,4,48,205,133,115);
+insert into REZULTATCGH values
+(404,4,49,212,132,132);
+insert into REZULTATCGH values
+(403,4,410,230,137,140);
+insert into REZULTATCGH values
+(501,4,411,205,133,115);
+
+insert into REZULTATCGH values
+(201,14,141,205,233,215);
+insert into REZULTATCGH values
+(100,14,142,212,132,132);
+insert into REZULTATCGH values
+(101,14,143,230,137,140);
+insert into REZULTATCGH values
+(102,14,144,205,133,115);
+insert into REZULTATCGH values
+(301,14,145,212,132,132);
+insert into REZULTATCGH values
+(302,14,146,230,137,140);
+insert into REZULTATCGH values
+(402,14,147,205,133,115);
+insert into REZULTATCGH values
+(401,14,148,212,132,132);
+insert into REZULTATCGH values
+(404,14,149,230,137,140);
+insert into REZULTATCGH values
+(403,14,1410,205,133,115);
+insert into REZULTATCGH values
+(501,14,1411,212,232,232);
+
+insert into REZULTATCGH values
+(201,15,151,205,233,215);
+insert into REZULTATCGH values
+(100,15,152,212,132,132);
+insert into REZULTATCGH values
+(101,15,153,230,137,140);
+insert into REZULTATCGH values
+(102,15,154,205,133,115);
+insert into REZULTATCGH values
+(301,15,155,212,132,132);
+insert into REZULTATCGH values
+(302,15,156,230,137,140);
+insert into REZULTATCGH values
+(402,15,157,205,133,115);
+insert into REZULTATCGH values
+(401,15,158,212,132,132);
+insert into REZULTATCGH values
+(404,15,159,230,137,140);
+insert into REZULTATCGH values
+(403,15,1510,205,133,115);
+insert into REZULTATCGH values
+(501,15,1511,212,232,232);
+
+insert into REZULTATCGH values
+(301,16,161,205,133,115);
+insert into REZULTATCGH values
+(402,16,162,212,132,132);
+insert into REZULTATCGH values
+(401,16,163,230,137,140);
+insert into REZULTATCGH values
+(301,20,201,205,133,115);
+insert into REZULTATCGH values
+(402,20,202,212,132,132);
+insert into REZULTATCGH values
+(401,20,203,230,137,140);
+insert into REZULTATCGH values
+(301,21,211,205,133,115);
+insert into REZULTATCGH values
+(402,21,212,212,132,132);
+insert into REZULTATCGH values
+(401,21,213,230,137,140);
+
+commit;
+
